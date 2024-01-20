@@ -9,6 +9,7 @@ import javafx.print.Printer;
 import javafx.print.PrinterJob;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
@@ -24,10 +25,29 @@ public class App extends Application {
         vbox.setPadding(new Insets(10));
 
         TextArea senderAddress = new TextArea();
+        senderAddress.setEditable(false);
         senderAddress.setPromptText("Enter Sender's Address");
-
+        senderAddress.setText("Martin Fournier\n128 allée des cigales\nSaint-jean-sur-richelieu, J2Y 1B3");
+        senderAddress.setStyle("-fx-control-inner-background: lightgray; -fx-border-color: black;");     
+        
+        ComboBox<Receiver> receiverComboBox = new ComboBox<>();
+        receiverComboBox.getItems().addAll(
+            new Receiver("Annie Mathieu", "\n884 Des Écluses\nSainte-catherine, J5C 1N8"),
+            new Receiver("Claude Godbout", "\n882 Des Écluses\nSainte-catherine, J5C 1N8"),
+            new Receiver("Guy Brisebois", "\n880 Des Écluses\nSainte-catherine, J5C 1N8"),
+            new Receiver("Marcel Lacasse", "\n4960 Saint-Laurent\nSainte-catherine, J5C 1S3"),
+            new Receiver("Jean-Paul Levesque", "\n4962 Saint-Laurent\nSainte-catherine, J5C 1S3"),
+            new Receiver("Stephanie Labre", "\n4964 Saint-Laurent\nSainte-catherine, J5C 1S3")
+            );
+        
         TextArea receiverAddress = new TextArea();
         receiverAddress.setPromptText("Enter Receiver's Address");
+
+        receiverComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                receiverAddress.setText(newSelection.getName() + newSelection.getAddress());
+            }
+        });
 
         Button printButton = new Button("Print Envelope");
         printButton.setOnAction(e -> printEnvelope(senderAddress.getText(), receiverAddress.getText()));
@@ -46,11 +66,10 @@ public class App extends Application {
                 printButton.requestFocus(); // Move focus to the sender address field
             }
         });
-
     
-        vbox.getChildren().addAll(senderAddress, receiverAddress, printButton);
+        vbox.getChildren().addAll(senderAddress,receiverComboBox, receiverAddress, printButton);
 
-        Scene scene = new Scene(vbox, 300, 200);
+        Scene scene = new Scene(vbox, 300, 300);
         stage.setScene(scene);
         stage.setTitle("Envelope Printer");
         stage.show();
